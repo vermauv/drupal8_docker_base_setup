@@ -1,0 +1,42 @@
+version: '3.1'
+volumes:
+  app:
+  percona:
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - /Users/uditverma/Sites/:/var/www/html/
+      - ./docker-utils/apache2/sites/:/etc/apache2/sites-enabled/
+    networks:
+#      app_net:
+#        ipv4_address: 192.168.65.240
+      default:
+        aliases:
+          - dev.curemint.local
+    links:
+      - percona
+    # environment:
+  percona:
+    image: percona:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - percona:/var/lib/mysql
+      - ./docker-utils/percona/conf.d:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: testdb
+#networks:
+#  app_net:
+#    driver: bridge
+#    driver_opts:
+#      com.docker.network.enable_ipv6: "false"
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 192.168.65.240/24
